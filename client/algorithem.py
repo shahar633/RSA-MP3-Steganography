@@ -20,26 +20,27 @@ def get_msg(msg):
 
 def hex_dump2(s):
     cnt = 0
-    ascii = ""
-    print"len=" + str(len(s))
+    ascii_text = ""
+    print("len=" + str(len(s)))
     for i in range(len(s)):
         cnt += 1
-        print "%02X" % int(ord(s[i])),
-        if ord(s[i]) > 31:
-            ascii += s[i]
+        value = s[i]
+        print("%02X" % value, end=" ")
+        if value > 31:
+            ascii_text += chr(value)
         else:
-            ascii += '.'
+            ascii_text += '.'
         if cnt % 16 == 0:
-            print "   |" + ascii
-            ascii = ""
+            print("   |" + ascii_text)
+            ascii_text = ""
         elif cnt % 8 == 0:
-            print "  ",
+            print("  ", end=" ")
     if cnt % 16 != 0:
-        for i in xrange(cnt % 16, 16):
-            print "  ",
+        for i in range(cnt % 16, 16):
+            print("  ", end=" ")
             if i == 8 and cnt % 8 != 0:
-                print "  ",
-        print "   |" + ascii
+                print("  ", end=" ")
+        print("   |" + ascii_text)
 
 
 class Algorithem:
@@ -59,17 +60,17 @@ class Algorithem:
         with open(self.file_name, "rb+") as file:
             while True:
                 x = file.read(1)
-                if x == '':
+                if x == b'':
                     break
-                elif x == "\xFF":
+                elif x == b"\xFF":
                     x = file.read(1)
-                    if x == "\xFB" or x == "\xFA":
+                    if x == b"\xFB" or x == b"\xFA":
                         self.frames_arr.append(file.tell() - 2)
                         self.find_len(file)
 
     def find_len(self, file):
         data = file.read(1)
-        data_str = hex(ord(data))[2:]
+        data_str = format(data[0], "02x")
         if len(data_str) < 2:
             return 0
         bitrate = self.bitrate[data_str[0]]
@@ -86,35 +87,35 @@ class Algorithem:
             frequency = self.frequency["2"]
         else:
             return 0
-        if chr(ord(data) | ord("\xFD")) == "\xFF":
+        if (data[0] | 0xFD) == 0xFF:
             padding = 1
         else:
             padding = 0
-        size = ((144 * bitrate * 1000) / frequency) + padding
+        size = ((144 * bitrate * 1000) // frequency) + padding
         file.read(size - 3)
         return size
 
     def put_msg(self):
         with open(self.file_name, "r+b") as file:
-            byte_per_frame = self.len_msg / len(self.frames_arr)
+            byte_per_frame = self.len_msg // len(self.frames_arr)
             reminder = self.len_msg % len(self.frames_arr)
-            offset = ord(self.key.exportKey()[100 + ord(str(len(self.frames_arr))[0]) - ord("0")]) + 52
+            key_data = self.key.exportKey()
+            offset = key_data[100 + int(str(len(self.frames_arr))[0])] + 52
             count = 0
             i = 0
-            divider = len(self.frames_arr) / self.len_msg
-            print self.frames_arr[0] + offset
+            divider = len(self.frames_arr) // self.len_msg
             if byte_per_frame == 0 or (reminder == 0 and byte_per_frame == 1):
                 for item in self.frames_arr:
                     if i % divider == 0:
                         if count < self.len_msg:
                             file.seek(item + offset)
-                            file.write(self.msg[count])
+                            file.write(self.msg[count:count + 1])
                             count += 1
                         else:
                             break
                     i += 1
             else:
-                print 'aa'
+                print('aa')
                 pass
 
     def encrypt(self):
@@ -123,15 +124,15 @@ class Algorithem:
 
     def decrypt(self):
         self.find_frames()
-        data = ''
+        data = b''
         with open(self.file_name, "rb+") as file:
-            byte_per_frame = self.len_msg / len(self.frames_arr)
+            byte_per_frame = self.len_msg // len(self.frames_arr)
             reminder = self.len_msg % len(self.frames_arr)
-            offset = ord(self.key.exportKey()[100 + ord(str(len(self.frames_arr))[0]) - ord("0")]) + 52
+            key_data = self.key.exportKey()
+            offset = key_data[100 + int(str(len(self.frames_arr))[0])] + 52
             count = 0
             i = 0
-            divider = len(self.frames_arr) / self.len_msg
-            print self.frames_arr[0] + offset
+            divider = len(self.frames_arr) // self.len_msg
             if byte_per_frame == 0 or (reminder == 0 and byte_per_frame == 1):
                 for item in self.frames_arr:
                     if i % divider == 0:
@@ -149,7 +150,7 @@ class Algorithem:
 
 def main():
     file_name = "fake.mp3"
-    msg = 'bacghjgfhn'
+    msg = b'bacghjgfhn'
     key = RSA.generate(1024)
     public = key.publickey()
     encryptor = PKCS1_OAEP.new(public)
@@ -161,7 +162,7 @@ def main():
     hex_dump2(msg)
     decryptor = PKCS1_OAEP.new(key)
     decrypted = decryptor.decrypt(msg)
-    print decrypted
+    print(decrypted)
 
 
 if __name__ == '__main__':

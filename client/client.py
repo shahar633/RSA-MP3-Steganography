@@ -44,7 +44,7 @@ def main(ip, port):
             if event.type == pygame.QUIT:
                 done = True
             else:
-                graphic.print_pygame("the message is: " + decrypted, 0, 0)
+                graphic.print_pygame("the message is: " + decrypted.decode(), 0, 0)
 
     client_socket.close()
 

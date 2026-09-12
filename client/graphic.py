@@ -56,7 +56,7 @@ def input_pygame(x, y, text=''):
 
 def main():
     x, txt = input_pygame(41,32,"beni")
-    print txt
+    print(txt)
     print_pygame(txt, 100,300)
 
 

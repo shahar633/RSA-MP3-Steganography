@@ -38,7 +38,7 @@ def main(ip, port):
     is_input, msg = graphic.input_pygame(window_width / 2 - hokpygame.max_width / 2,
                                          window_height / 2 - FONT_size / 2, "enter your message:")
     pygame.quit()
-    msg = str(msg)
+    msg = str(msg).encode()
     rsa_msg = get_msg(msg, public)
 
     x = Algorithem("file.mp3", public, rsa_msg)
