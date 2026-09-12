@@ -43,7 +43,7 @@ def hex_dump2(s):
         print("   |" + ascii_text)
 
 
-class Algorithem:
+class Algorithm:
 
     def __init__(self, mp3_file_name, key, rsa_msg=''):
         self.file_name = mp3_file_name
@@ -155,9 +155,9 @@ def main():
     public = key.publickey()
     encryptor = PKCS1_OAEP.new(public)
     encrypted = encryptor.encrypt(msg)
-    x = Algorithem(file_name, public, encrypted)
+    x = Algorithm(file_name, public, encrypted)
     x.encrypt()
-    y = Algorithem(file_name, public)
+    y = Algorithm(file_name, public)
     msg = y.decrypt()
     hex_dump2(msg)
     decryptor = PKCS1_OAEP.new(key)

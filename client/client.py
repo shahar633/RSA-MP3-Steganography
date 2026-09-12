@@ -3,7 +3,7 @@ import threading
 from tcp_by_size import send_with_size, recv_by_size
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-from algorithem import Algorithem
+from algorithm import Algorithm
 import sys
 import graphic
 import pygame
@@ -34,7 +34,7 @@ def main(ip, port):
     with open("fake.mp3", 'wb') as f:
         f.write(data)
 
-    x = Algorithem("fake.mp3", public)
+    x = Algorithm("fake.mp3", public)
     msg = x.decrypt()
     decryptor = PKCS1_OAEP.new(key)
     decrypted = decryptor.decrypt(msg)

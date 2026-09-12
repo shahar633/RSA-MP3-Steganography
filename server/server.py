@@ -1,7 +1,7 @@
 import socket
 import threading
 from tcp_by_size import send_with_size, recv_by_size
-from algorithem import Algorithem
+from algorithm import Algorithm
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 import graphic
@@ -41,7 +41,7 @@ def main(ip, port):
     msg = str(msg).encode()
     rsa_msg = get_msg(msg, public)
 
-    x = Algorithem("file.mp3", public, rsa_msg)
+    x = Algorithm("file.mp3", public, rsa_msg)
     x.encrypt()
 
     with open("file.mp3", 'rb') as file:
